@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -48,14 +49,17 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
-
         recyclerView.adapter = recipeAdapter
 
-            fetchRecipes()}
+        fetchRecipes()
 
-
-
+        // Setup button to view new recipes
+        val viewRecipesButton: Button = findViewById(R.id.button_view_recipes_new)
+        viewRecipesButton.setOnClickListener {
+            val intent = Intent(this, RecipeListNewActivity::class.java)
+            startActivity(intent)
+        }
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -72,7 +76,6 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_logout -> {
-
                 val editor=sharedPreferences.edit()
                 editor.clear()
                 editor.apply()
@@ -86,7 +89,6 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_my_recipes->{
-
                 startActivity(Intent(this,MainActivity::class.java))
                 true
             }
@@ -137,6 +139,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e("MainActivity", "Error fetching recipes", exception)
             }
     }
+
     private fun fetchMyRecipes() {
         val sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE)
         val userEmail = sharedPreferences.getString("email", null)
@@ -168,5 +171,4 @@ class MainActivity : AppCompatActivity() {
                 Log.e("MainActivity", "Error fetching recipes", exception)
             }
     }
-
 }

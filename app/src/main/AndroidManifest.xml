@@ -35,6 +35,8 @@
         <activity
             android:name=".view.AddUserActivity"
             android:exported="false" />
+        <activity android:name=".view.RecipeListNewActivity"/>
+        <activity android:name=".view.RecipeApiDetailActivity"/>
 
         <!-- Correctly specify MainActivity with package path -->
         <activity
