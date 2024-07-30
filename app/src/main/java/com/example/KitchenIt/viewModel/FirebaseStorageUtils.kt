@@ -1,4 +1,4 @@
-package com.example.julyapp.viewModel
+package com.example.KitchenIt.viewModel
 
 import android.net.Uri
 import com.google.firebase.storage.FirebaseStorage

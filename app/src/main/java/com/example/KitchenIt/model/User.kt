@@ -1,4 +1,4 @@
-package com.example.julyapp.model
+package com.example.KitchenIt.model
 
 data class User(
     val email:String,

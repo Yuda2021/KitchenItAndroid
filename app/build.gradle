@@ -3,18 +3,15 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt' // for kapt support
     id 'kotlin-android'
-
-
-
     id 'kotlin-parcelize'
 }
 
 android {
-    namespace 'com.example.julyapp'
+    namespace 'com.example.KitchenIt'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.example.julyapp"
+        applicationId "com.example.KitchenIt"
         minSdk 26
         targetSdk 34
         versionCode 1

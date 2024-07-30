@@ -1,4 +1,4 @@
-package com.example.julyapp
+package com.example.KitchenIt
 
 import android.os.Bundle
 import android.widget.Button

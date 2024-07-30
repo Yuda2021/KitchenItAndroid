@@ -1,4 +1,4 @@
-package com.example.julyapp.view
+package com.example.KitchenIt.view
 
 import android.app.Activity
 import android.content.Context
@@ -10,7 +10,7 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.example.julyapp.R
+import com.example.KitchenIt.R
 import com.google.firebase.firestore.FirebaseFirestore
 
 class AddUserActivity : AppCompatActivity() {

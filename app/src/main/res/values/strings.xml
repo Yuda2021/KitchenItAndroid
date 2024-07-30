@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">JulyApp</string>
+    <string name="app_name">KitchenIt</string>
     <string-array name="user_type_array">
         <item>User</item>
         <item>Admin</item>

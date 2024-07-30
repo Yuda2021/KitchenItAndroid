@@ -1,4 +1,4 @@
-package com.example.julyapp.view
+package com.example.KitchenIt.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,10 +9,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.julyapp.R
-import com.example.julyapp.Recipe
-import com.example.julyapp.viewModel.RecipeAdapter
-import com.example.julyapp.RecipeDetailActivity
+import com.example.KitchenIt.R
+import com.example.KitchenIt.Recipe
+import com.example.KitchenIt.viewModel.RecipeAdapter
+import com.example.KitchenIt.RecipeDetailActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query

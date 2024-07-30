@@ -1,8 +1,7 @@
-package com.example.julyapp.viewModel
+package com.example.KitchenIt.viewModel
 
-import com.example.julyapp.Recipe
+import com.example.KitchenIt.Recipe
 
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.DocumentSnapshot
 
