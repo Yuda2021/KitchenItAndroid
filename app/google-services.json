@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "925706457878",
+    "project_id": "kitchenit-faba8",
+    "storage_bucket": "kitchenit-faba8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:925706457878:android:3a886dd35b26cacd6b3637",
+        "android_client_info": {
+          "package_name": "com.example.julyapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClGanny_BmhahhmA-sLv5D1y7i3vkv5po"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
