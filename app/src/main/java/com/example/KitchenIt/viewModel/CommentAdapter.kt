@@ -1,4 +1,4 @@
-package com.example.julyapp
+package com.example.KitchenIt
 
 import android.view.LayoutInflater
 import android.view.View

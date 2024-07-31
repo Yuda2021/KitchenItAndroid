@@ -1,4 +1,4 @@
-package com.example.julyapp.view
+package com.example.KitchenIt.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
-import com.example.julyapp.R
+import com.example.KitchenIt.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 

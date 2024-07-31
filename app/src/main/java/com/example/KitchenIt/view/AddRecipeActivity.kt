@@ -1,4 +1,4 @@
-package com.example.julyapp.view
+package com.example.KitchenIt.view
 
 import android.app.Activity
 import android.content.Context
@@ -14,8 +14,8 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.julyapp.viewModel.FirebaseStorageUtils
-import com.example.julyapp.R
+import com.example.KitchenIt.viewModel.FirebaseStorageUtils
+import com.example.KitchenIt.R
 import com.google.firebase.firestore.FirebaseFirestore
 
 

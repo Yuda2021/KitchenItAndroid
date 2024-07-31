@@ -1,4 +1,4 @@
-package com.example.julyapp
+package com.example.KitchenIt
 
 import org.junit.Test
 
