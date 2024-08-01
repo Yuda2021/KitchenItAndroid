@@ -39,6 +39,7 @@ class RecipeListNewActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         fetchRecipes()
+
     }
 
     private fun fetchRecipes() {

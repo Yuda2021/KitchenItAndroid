@@ -11,6 +11,6 @@
 
     <item
         android:id="@+id/action_my_recipes"
-        android:icon="@drawable/baseline_home_24"
+        android:icon="@drawable/baseline_self_improvement"
         android:title="My Recipes" />
 </menu>

@@ -43,7 +43,8 @@ class AddUserActivity : AppCompatActivity() {
         buttonCancel = findViewById(R.id.buttonCancel)
         buttonGoToLogin = findViewById(R.id.buttonGoToLogin)
         progressBar = findViewById(R.id.progressBar)
-        sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences("UserSession", Context.MODE_PRIVATE)//"user_prefs"
+
 
         buttonSelectImage.setOnClickListener {
             val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
@@ -114,6 +115,7 @@ class AddUserActivity : AppCompatActivity() {
         editor.putString("password", password)
         editor.putString("imageUri", imageUri)
         editor.apply()
+
     }
 
     private fun showProgressBar() {

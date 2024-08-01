@@ -68,9 +68,15 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.action_my_recipes-> {
+                    if((getSharedPreferences("UserSession", MODE_PRIVATE).getString("name", null))!=null){
                     recipes.clear()
                     fetchMyRecipes()
                     true
+                    }
+                    else {
+                        Toast.makeText(this,"No User Found!   Please login first.",Toast.LENGTH_SHORT).show()
+                        false}
+
                 }
                 R.id.action_home->{
                     recipes.clear()
@@ -110,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_profile -> {
-                fetchRecipes()
+
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -122,17 +128,17 @@ class MainActivity : AppCompatActivity() {
         val loginRegisterItem = menu?.findItem(R.id.action_login_register)
         val logoutItem = menu?.findItem(R.id.action_logout)
         val addRecipeItem = menu?.findItem(R.id.action_add_recipe)
-        val myRecipeItem = menu?.findItem(R.id.action_my_recipes)
+        val profileItem = menu?.findItem(R.id.action_profile)
 
         if (currentUser == null) {
             loginRegisterItem?.isVisible = true
             addRecipeItem?.isVisible = false
-            myRecipeItem?.isVisible = false
+            profileItem?.isVisible = false
             logoutItem?.isVisible = false
         } else {
             loginRegisterItem?.isVisible = false
             addRecipeItem?.isVisible = true
-            myRecipeItem?.isVisible = true
+            profileItem?.isVisible = true
             logoutItem?.isVisible = true
         }
     }
@@ -170,9 +176,6 @@ class MainActivity : AppCompatActivity() {
             Log.e("MainActivity", "User email not found in SharedPreferences")
             return
         }
-
-        Log.d("MainActivity", "Fetching recipes for user email: $userEmail")
-
         db.collection("recipes")
             .whereEqualTo("userEmail", userEmail)
             .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -188,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                     recipes.add(recipe)
                 }
                 recipeAdapter.notifyDataSetChanged()
-                Log.d("MainActivity", "Fetched ${recipes.size} recipes")
+                if(recipes.size==0)Toast.makeText(this,"No Such Recipes Yet!",Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Error fetching recipes: ${exception.message}", Toast.LENGTH_SHORT).show()
