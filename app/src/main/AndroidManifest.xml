@@ -23,8 +23,8 @@
         android:theme="@style/Theme.KitchenIt"
         tools:targetApi="34">
         <activity
-            android:name=".view.BaseActivity"
-            android:exported="false" />
+            android:name=".viewModel.EditRecipeActivity" />
+
         <activity
             android:name=".view.LoginActivity"
             android:exported="false" />

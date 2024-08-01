@@ -54,6 +54,8 @@ class MainActivity : AppCompatActivity() {
                 putExtra("userEmail", recipe.userEmail)
             }
             startActivity(intent)
+
+
         }
 
         recyclerView.adapter = recipeAdapter
@@ -87,6 +89,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    override fun onResume() {
+        super.onResume()
+        fetchRecipes() // Refresh recipes when returning to MainActivity
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -191,7 +198,10 @@ class MainActivity : AppCompatActivity() {
                     recipes.add(recipe)
                 }
                 recipeAdapter.notifyDataSetChanged()
-                if(recipes.size==0)Toast.makeText(this,"No Such Recipes Yet!",Toast.LENGTH_SHORT).show()
+                if(recipes.size==0) {
+                    Toast.makeText(this, "No Such Recipes Yet!", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this,MainActivity::class.java))
+                }
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Error fetching recipes: ${exception.message}", Toast.LENGTH_SHORT).show()
