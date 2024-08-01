@@ -8,12 +8,14 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.KitchenIt.R
 import com.example.KitchenIt.Recipe
 import com.example.KitchenIt.viewModel.RecipeAdapter
 import com.example.KitchenIt.RecipeDetailActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
 
+
         // Setup RecyclerView
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -53,11 +56,23 @@ class MainActivity : AppCompatActivity() {
 
         fetchRecipes()
 
-        // Setup button to view new recipes
-        val viewRecipesButton: Button = findViewById(R.id.button_view_recipes_new)
-        viewRecipesButton.setOnClickListener {
-            val intent = Intent(this, RecipeListNewActivity::class.java)
-            startActivity(intent)
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.action_home -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    true
+                }
+                R.id.action_our_chef -> {
+                    startActivity(Intent(this, RecipeListNewActivity::class.java))
+                    true
+                }
+                R.id.action_profile -> {
+                    startActivity(Intent(this, MainActivity::class.java))
+                    true
+                }
+                else -> false
+            }
         }
     }
 

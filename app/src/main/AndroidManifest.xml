@@ -22,7 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KitchenIt"
         tools:targetApi="34">
-
+        <activity
+            android:name=".view.BaseActivity"
+            android:exported="false" />
         <activity
             android:name=".view.LoginActivity"
             android:exported="false" />
@@ -35,19 +37,17 @@
         <activity
             android:name=".view.AddUserActivity"
             android:exported="false" />
-        <activity android:name=".view.RecipeListNewActivity"/>
-        <activity android:name=".view.RecipeApiDetailActivity"/>
-
-        <!-- Correctly specify MainActivity with package path -->
+        <activity android:name=".view.RecipeListNewActivity" />
+        <activity android:name=".view.RecipeApiDetailActivity" /> <!-- Correctly specify MainActivity with package path -->
         <activity
-            android:name="com.example.KitchenIt.view.MainActivity"
+            android:name=".view.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
