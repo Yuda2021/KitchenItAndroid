@@ -1,5 +1,6 @@
 package com.example.KitchenIt.view
 
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -129,7 +130,7 @@ class AddRecipeActivity : AppCompatActivity() {
     }
 
     private fun getUserEmail(context: Context): String? {
-        val sharedPreferences: SharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val sharedPreferences: SharedPreferences = context.getSharedPreferences("UserSession", Context.MODE_PRIVATE)
         return sharedPreferences.getString("email", null)
     }
 }

@@ -6,7 +6,9 @@ import android.text.method.LinkMovementMethod
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.text.HtmlCompat
 import com.bumptech.glide.Glide
 import com.example.KitchenIt.R
@@ -32,7 +34,10 @@ class RecipeApiDetailActivity : AppCompatActivity() {
 
         val recipeId = intent.getStringExtra("recipeId") ?: return
 
+
+
         fetchRecipeDetails(recipeId)
+
     }
 
     private fun fetchRecipeDetails(recipeId: String) {

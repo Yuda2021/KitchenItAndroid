@@ -5,20 +5,23 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.KitchenIt.R
 import com.example.KitchenIt.Recipe
+import com.example.KitchenIt.api.RecipeResponse
+import com.example.KitchenIt.api.RetrofitClient
 import com.example.KitchenIt.viewModel.RecipeAdapter
-import com.example.KitchenIt.RecipeDetailActivity
+
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recipeAdapter: RecipeAdapter
     private val recipes = mutableListOf<Recipe>()
     private lateinit var auth: FirebaseAuth
+    private val apiKey = "731232ba92804023a163fafbbfacd26c"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,7 +40,6 @@ class MainActivity : AppCompatActivity() {
         // Initialize Firestore and FirebaseAuth
         db = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
-
 
         // Setup RecyclerView
         recyclerView = findViewById(R.id.recyclerView)
@@ -59,16 +63,18 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.action_home -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    true
-                }
                 R.id.action_our_chef -> {
                     startActivity(Intent(this, RecipeListNewActivity::class.java))
                     true
                 }
-                R.id.action_profile -> {
-                    startActivity(Intent(this, MainActivity::class.java))
+                R.id.action_my_recipes-> {
+                    recipes.clear()
+                    fetchMyRecipes()
+                    true
+                }
+                R.id.action_home->{
+                    recipes.clear()
+                    fetchRecipes()
                     true
                 }
                 else -> false
@@ -91,20 +97,20 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_logout -> {
-                val editor=sharedPreferences.edit()
+                val editor = sharedPreferences.edit()
                 editor.clear()
                 editor.apply()
                 auth.signOut()
                 updateMenuVisibility()
-                startActivity(Intent(this,MainActivity::class.java))
+                startActivity(Intent(this, MainActivity::class.java))
                 true
             }
-            R.id.action_add_recipe->{
-                startActivity(Intent(this,AddRecipeActivity::class.java))
+            R.id.action_add_recipe -> {
+                startActivity(Intent(this, AddRecipeActivity::class.java))
                 true
             }
-            R.id.action_my_recipes->{
-                startActivity(Intent(this,MainActivity::class.java))
+            R.id.action_profile -> {
+                fetchRecipes()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -112,21 +118,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateMenuVisibility(menu: Menu? = null) {
-        val currentUser = getSharedPreferences("UserSession", MODE_PRIVATE).getString("name",null)
+        val currentUser = getSharedPreferences("UserSession", MODE_PRIVATE).getString("name", null)
         val loginRegisterItem = menu?.findItem(R.id.action_login_register)
         val logoutItem = menu?.findItem(R.id.action_logout)
-        val addRecipeItem =menu?.findItem(R.id.action_add_recipe)
-        val myRecipeItem=menu?.findItem(R.id.action_my_recipes)
+        val addRecipeItem = menu?.findItem(R.id.action_add_recipe)
+        val myRecipeItem = menu?.findItem(R.id.action_my_recipes)
 
         if (currentUser == null) {
             loginRegisterItem?.isVisible = true
-            addRecipeItem?.isVisible=false
-            myRecipeItem?.isVisible=false
+            addRecipeItem?.isVisible = false
+            myRecipeItem?.isVisible = false
             logoutItem?.isVisible = false
         } else {
             loginRegisterItem?.isVisible = false
-            addRecipeItem?.isVisible=true
-            myRecipeItem?.isVisible=true
+            addRecipeItem?.isVisible = true
+            myRecipeItem?.isVisible = true
             logoutItem?.isVisible = true
         }
     }
@@ -144,7 +150,7 @@ class MainActivity : AppCompatActivity() {
                     val products = document.getString("products") ?: ""
                     val userEmail = document.getString("userEmail") ?: ""
 
-                    val recipe = Recipe(title, content, imageUrl, products,userEmail)
+                    val recipe = Recipe(title, content, imageUrl, products, userEmail)
                     recipes.add(recipe)
                 }
                 recipeAdapter.notifyDataSetChanged()
@@ -161,8 +167,11 @@ class MainActivity : AppCompatActivity() {
 
         if (userEmail.isNullOrEmpty()) {
             Toast.makeText(this, "User email not found in SharedPreferences", Toast.LENGTH_SHORT).show()
+            Log.e("MainActivity", "User email not found in SharedPreferences")
             return
         }
+
+        Log.d("MainActivity", "Fetching recipes for user email: $userEmail")
 
         db.collection("recipes")
             .whereEqualTo("userEmail", userEmail)
@@ -175,15 +184,38 @@ class MainActivity : AppCompatActivity() {
                     val content = document.getString("content") ?: ""
                     val imageUrl = document.getString("imageUrl") ?: ""
                     val products = document.getString("products") ?: ""
-
                     val recipe = Recipe(title, content, imageUrl, products, userEmail)
                     recipes.add(recipe)
                 }
                 recipeAdapter.notifyDataSetChanged()
+                Log.d("MainActivity", "Fetched ${recipes.size} recipes")
             }
             .addOnFailureListener { exception ->
                 Toast.makeText(this, "Error fetching recipes: ${exception.message}", Toast.LENGTH_SHORT).show()
                 Log.e("MainActivity", "Error fetching recipes", exception)
             }
     }
+
+    private fun fetchRecipesFromApi() {
+        RetrofitClient.instance.getRandomRecipes(apiKey, 10).enqueue(object :
+            Callback<RecipeResponse> {
+            override fun onResponse(
+                call: Call<RecipeResponse>,
+                response: Response<RecipeResponse>
+            ) {
+                if (response.isSuccessful) {
+
+                } else {
+                   Toast.makeText(this@MainActivity,"error fetching from api",Toast.LENGTH_SHORT)
+                }
+            }
+
+            override fun onFailure(call: Call<RecipeResponse>, t: Throwable) {
+                Log.e("RecipeListNewActivity", "Error fetching recipes", t)
+                Toast.makeText(this@MainActivity, "Error fetching recipes", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
 }

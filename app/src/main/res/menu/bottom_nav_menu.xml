@@ -10,7 +10,7 @@
         android:title="By Our Chef" />
 
     <item
-        android:id="@+id/action_profile"
+        android:id="@+id/action_my_recipes"
         android:icon="@drawable/baseline_home_24"
-        android:title="Profile" />
+        android:title="My Recipes" />
 </menu>

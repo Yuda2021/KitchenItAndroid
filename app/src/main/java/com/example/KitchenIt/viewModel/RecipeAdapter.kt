@@ -11,7 +11,7 @@ import com.example.KitchenIt.R
 import com.example.KitchenIt.Recipe
 
 class RecipeAdapter(
-    private val recipes: List<Recipe>,
+    private var recipes: List<Recipe>,
     private val onItemClick: (Recipe) -> Unit
 ) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
@@ -42,4 +42,10 @@ class RecipeAdapter(
     }
 
     override fun getItemCount(): Int = recipes.size
+
+
+    fun updateRecipes(newRecipes: List<Recipe>) {
+        recipes = newRecipes
+        notifyDataSetChanged()
+    }
 }

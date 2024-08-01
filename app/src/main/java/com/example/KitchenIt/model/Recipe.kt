@@ -10,7 +10,7 @@ data class Recipe(
     val products: String,
     val userEmail: String = "default@user",
     val timestamp: Long = System.currentTimeMillis(),
-    val comments: List<Comment> = listOf()
+
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
@@ -19,7 +19,7 @@ data class Recipe(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readLong(),
-        parcel.createTypedArrayList(Comment.CREATOR) ?: listOf()
+
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -29,7 +29,7 @@ data class Recipe(
         parcel.writeString(products)
         parcel.writeString(userEmail)
         parcel.writeLong(timestamp)
-        parcel.writeTypedList(comments)
+
     }
 
     override fun describeContents(): Int {
