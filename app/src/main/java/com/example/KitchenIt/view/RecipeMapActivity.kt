@@ -1,11 +1,20 @@
 package com.example.KitchenIt.view
 
 import android.content.Intent
-import android.location.Geocoder
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.KitchenIt.R
+import com.example.KitchenIt.Recipe
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -13,7 +22,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlin.random.Random
 
 class RecipeMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -21,6 +29,8 @@ class RecipeMapActivity : AppCompatActivity(), OnMapReadyCallback {
     private val db = FirebaseFirestore.getInstance()
     private lateinit var buttonZoomIn: Button
     private lateinit var buttonZoomOut: Button
+    private lateinit var buttonShowRecipes: Button
+    private lateinit var recipes: List<Recipe>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +41,7 @@ class RecipeMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         buttonZoomIn = findViewById(R.id.buttonZoomIn)
         buttonZoomOut = findViewById(R.id.buttonZoomOut)
+        buttonShowRecipes = findViewById(R.id.buttonShowRecipes)
 
         buttonZoomIn.setOnClickListener {
             googleMap.animateCamera(CameraUpdateFactory.zoomIn())
@@ -38,6 +49,10 @@ class RecipeMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         buttonZoomOut.setOnClickListener {
             googleMap.animateCamera(CameraUpdateFactory.zoomOut())
+        }
+
+        buttonShowRecipes.setOnClickListener {
+            showRecipesModal()
         }
     }
 
@@ -49,49 +64,86 @@ class RecipeMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun loadRecipesOnMap() {
         db.collection("recipes").get().addOnSuccessListener { result ->
-            for (document in result) {
+            recipes = result.mapNotNull { document ->
                 val title = document.getString("title") ?: ""
-                val country = document.getString("country") ?: ""
-                val city = document.getString("city") ?: ""
-                val location = getRandomLocationInCity(city, country)
-
-                location?.let {
-                    val marker = googleMap.addMarker(MarkerOptions().position(it).title(title))
-                    marker?.tag = document.id
-
-                    googleMap.setOnMarkerClickListener { marker ->
-                        val recipeId = marker?.tag as? String
-                        if (recipeId != null) {
-                            val intent = Intent(this, RecipeDetailActivity::class.java).apply {
-                                putExtra("title", marker.title)
-                                putExtra("latitude", it.latitude)
-                                putExtra("longitude", it.longitude)
-                            }
-                            startActivity(intent)
-                        }
-                        true
-                    }
+                val latitude = document.getDouble("latitude") ?: 0.0
+                val longitude = document.getDouble("longitude") ?: 0.0
+                if (latitude != 0.0 && longitude != 0.0) {
+                    Recipe(title, "", "", "", "", 0L, latitude, longitude)
+                } else {
+                    null
                 }
+            }
+
+            recipes.forEach { recipe ->
+                val location = LatLng(recipe.latitude, recipe.longitude)
+                val marker = googleMap.addMarker(MarkerOptions().position(location).title(recipe.title))
+                marker?.tag = recipe
+            }
+
+            googleMap.setOnMarkerClickListener { marker ->
+                val recipe = marker.tag as? Recipe
+                if (recipe != null) {
+                    val intent = Intent(this, RecipeDetailActivity::class.java).apply {
+                        putExtra("title", recipe.title)
+                        putExtra("latitude", recipe.latitude)
+                        putExtra("longitude", recipe.longitude)
+                    }
+                    startActivity(intent)
+                }
+                true
             }
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(31.5, 34.75), 7f)) // Default to Israel
         }
     }
 
-    private fun getRandomLocationInCity(city: String, country: String): LatLng? {
-        val geocoder = Geocoder(this)
-        val addresses = geocoder.getFromLocationName("$city, $country", 1)
-        if (addresses != null && addresses.isNotEmpty()) {
-            val address = addresses[0]
-            val lat = address.latitude
-            val lng = address.longitude
-
-            // Generate a random position within a 0.01 degree (~1 km) radius
-            val randomLat = lat + (Random.nextDouble() - 0.5) * 0.02
-            val randomLng = lng + (Random.nextDouble() - 0.5) * 0.02
-
-            return LatLng(randomLat, randomLng)
+    private fun showRecipesModal() {
+        val builder = AlertDialog.Builder(this)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.dialog_recipe_list, null)
+        val recyclerView = dialogLayout.findViewById<RecyclerView>(R.id.recyclerViewRecipes)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        val adapter = RecipeListAdapter(recipes) { recipe ->
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(recipe.latitude, recipe.longitude), 15f))
+            builder.create().dismiss()
         }
-        return null
+        recyclerView.adapter = adapter
+
+        builder.setView(dialogLayout)
+        builder.setTitle("Select a Recipe")
+        builder.setNegativeButton("Close", null)
+        builder.show()
+    }
+
+    class RecipeListAdapter(private val recipes: List<Recipe>, private val onItemClick: (Recipe) -> Unit) :
+        RecyclerView.Adapter<RecipeListAdapter.RecipeViewHolder>() {
+
+        inner class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            private val titleTextView: TextView = itemView.findViewById(R.id.recipeTitle)
+            private val imageView: ImageView = itemView.findViewById(R.id.recipeImage)
+
+            fun bind(recipe: Recipe) {
+                titleTextView.text = recipe.title
+                // Assuming you have an image URL field in your Recipe class
+                Glide.with(itemView.context).load(recipe.imageUrl).into(imageView)
+
+                itemView.setOnClickListener {
+                    onItemClick(recipe)
+                }
+            }
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_recipe_modal, parent, false)
+            return RecipeViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
+            holder.bind(recipes[position])
+        }
+
+        override fun getItemCount() = recipes.size
     }
 }

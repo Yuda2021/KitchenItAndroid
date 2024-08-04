@@ -11,24 +11,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
+    <Button
+        android:id="@+id/buttonZoomIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
+        android:text="Zoom In"
+        android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:orientation="vertical">
+        android:layout_alignParentStart="true" />
 
-        <Button
-            android:id="@+id/buttonZoomIn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Zoom In" />
+    <Button
+        android:id="@+id/buttonZoomOut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zoom Out"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:layout_toEndOf="@id/buttonZoomIn" />
 
-        <Button
-            android:id="@+id/buttonZoomOut"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Zoom Out" />
-    </LinearLayout>
+    <Button
+        android:id="@+id/buttonShowRecipes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Recipes"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:layout_toEndOf="@id/buttonZoomOut" />
+
 </RelativeLayout>
