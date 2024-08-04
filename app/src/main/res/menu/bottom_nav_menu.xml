@@ -4,12 +4,10 @@
         android:id="@+id/action_home"
         android:icon="@drawable/baseline_home_24"
         android:title="Home" />
-
     <item
         android:id="@+id/action_our_chef"
         android:icon="@drawable/baseline_restaurant"
         android:title="By Our Chef" />
-
     <item
         android:id="@+id/action_my_recipes"
         android:icon="@drawable/baseline_self_improvement"

@@ -58,12 +58,13 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.action_our_chef -> {
-                    startActivity(Intent(this, RecipeListNewActivity::class.java))
+                R.id.action_home -> {
+                    recipes.clear()
+                    fetchRecipes()
                     true
                 }
                 R.id.action_my_recipes -> {
-                    if ((getSharedPreferences("UserSession", MODE_PRIVATE).getString("name", null)) != null) {
+                    if (getSharedPreferences("UserSession", MODE_PRIVATE).getString("name", null) != null) {
                         recipes.clear()
                         fetchMyRecipes()
                         true
@@ -72,9 +73,8 @@ class MainActivity : AppCompatActivity() {
                         false
                     }
                 }
-                R.id.action_home -> {
-                    recipes.clear()
-                    fetchRecipes()
+                R.id.action_our_chef -> {
+                    startActivity(Intent(this, RecipeListNewActivity::class.java))
                     true
                 }
                 R.id.action_map -> {
