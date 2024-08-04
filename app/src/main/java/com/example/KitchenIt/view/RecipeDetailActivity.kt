@@ -1,33 +1,35 @@
+// RecipeDetailActivity.kt
 package com.example.KitchenIt.view
 
-import android.app.AlertDialog
-import android.content.Intent
+import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
-import android.widget.ProgressBar
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.KitchenIt.R
-import com.example.KitchenIt.viewModel.EditRecipeActivity
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import java.util.Locale
 
-class RecipeDetailActivity : AppCompatActivity() {
+class RecipeDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var titleTextView: TextView
     private lateinit var contentTextView: TextView
     private lateinit var productsTextView: TextView
     private lateinit var imageView: ImageView
     private lateinit var userEmailTextView: TextView
-    private val db = FirebaseFirestore.getInstance()
-    private lateinit var progressBar: ProgressBar
-
+    private lateinit var locationMessageTextView: TextView
+    private lateinit var countryTextView: TextView
+    private lateinit var cityTextView: TextView
+    private lateinit var mapFragment: SupportMapFragment
+    private var recipeLocation: LatLng? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,16 +40,26 @@ class RecipeDetailActivity : AppCompatActivity() {
         productsTextView = findViewById(R.id.detailProducts)
         imageView = findViewById(R.id.detailImage)
         userEmailTextView = findViewById(R.id.detailUserEmail)
+        locationMessageTextView = findViewById(R.id.locationMessage)
+        countryTextView = findViewById(R.id.detailCountry)
+        cityTextView = findViewById(R.id.detailCity)
 
         val title = intent.getStringExtra("title") ?: ""
         val content = intent.getStringExtra("content") ?: ""
         val imageUrl = intent.getStringExtra("imageUrl") ?: ""
         val products = intent.getStringExtra("products") ?: ""
         val userEmail = intent.getStringExtra("userEmail") ?: ""
-        val buttonEditRecipe = findViewById<Button>(R.id.buttonEditRecipe)
-        val buttonDeleteRecipe = findViewById<Button>(R.id.buttonDeleteRecipe)
-        progressBar = findViewById(R.id.progressBar)
+        val latitude = intent.getDoubleExtra("latitude", 0.0)
+        val longitude = intent.getDoubleExtra("longitude", 0.0)
 
+        Log.d("RecipeDetailActivity", "Recipe data - title: $title, content: $content, imageUrl: $imageUrl, products: $products, userEmail: $userEmail, latitude: $latitude, longitude: $longitude")
+
+        if (latitude != 0.0 && longitude != 0.0) {
+            recipeLocation = LatLng(latitude, longitude)
+            reverseGeocodeLocation(recipeLocation!!)
+        } else {
+            Log.d("RecipeDetailActivity", "Latitude and/or longitude are zero, setting recipeLocation to null.")
+        }
 
         titleTextView.text = title
         contentTextView.text = content
@@ -55,67 +67,52 @@ class RecipeDetailActivity : AppCompatActivity() {
         userEmailTextView.text = "Posted by: $userEmail"
         Glide.with(this).load(imageUrl).into(imageView)
 
-        val sharedPreferences = getSharedPreferences("UserSession", MODE_PRIVATE)
-        if (sharedPreferences.getString("email", null) == userEmail) {
-            buttonEditRecipe.visibility = View.VISIBLE
-            buttonDeleteRecipe.visibility = View.VISIBLE
-        }
-        buttonEditRecipe.setOnClickListener {
-            val intent = Intent(this, EditRecipeActivity::class.java).apply {
-                putExtra("title", title)
-                putExtra("content", content)
-                putExtra("products", products)
-                putExtra("userEmail", userEmail)
-            }
-            startActivity(intent)
+        if (recipeLocation == null) {
+            locationMessageTextView.text = "Location not available for this recipe. Edit the Recipe to add location."
+            locationMessageTextView.visibility = View.VISIBLE
+        } else {
+            locationMessageTextView.visibility = View.GONE
         }
 
-        buttonDeleteRecipe.setOnClickListener {
-            val alertDialog = AlertDialog.Builder(this)
-            alertDialog.setTitle("Delete Recipe")
-            alertDialog.setMessage("Are you sure you want to delete this recipe?")
-            alertDialog.setPositiveButton("Yes") { _, _ ->
-                deleteRecipeFromDb(title)
-            }
-            alertDialog.setNegativeButton("No", null)
-            alertDialog.show()
-        }
+        // Add the SupportMapFragment programmatically
+        mapFragment = SupportMapFragment.newInstance()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.map_container, mapFragment)
+            .commit()
 
+        mapFragment.getMapAsync(this)
     }
 
-
-
-
-    private fun deleteRecipeFromDb(title: String?) {
-        if (title == null) return
-        progressBar.visibility = View.VISIBLE
-        db.collection("recipes")
-            .whereEqualTo("title", title)
-            .get()
-            .addOnSuccessListener { result ->
-                for (document in result) {
-                    document.reference.delete()
-                        .addOnSuccessListener {  // Hide progress bar
-                            progressBar.visibility = View.GONE
-                            Toast.makeText(this, "Recipe deleted successfully", Toast.LENGTH_SHORT).show()
-                            // Refresh the main activity
-                            val intent = Intent(this, MainActivity::class.java)
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent)
-                            finish()  // Close the current activity
-                        }
-                        .addOnFailureListener { e ->
-                            // Hide progress bar
-                            progressBar.visibility = View.GONE
-                            Toast.makeText(this, "Error deleting recipe: ${e.message}", Toast.LENGTH_SHORT).show()
-                        }
-                }
+    private fun reverseGeocodeLocation(location: LatLng) {
+        val geocoder = Geocoder(this, Locale.getDefault())
+        val addresses = geocoder.getFromLocation(location.latitude, location.longitude, 1)
+        addresses?.let {
+            if (it.isNotEmpty()) {
+                val address = it[0]
+                countryTextView.text = "Country: ${address.countryName}"
+                cityTextView.text = "City: ${address.locality ?: address.subAdminArea}"
+                Log.d("RecipeDetailActivity", "Geocoded address - Country: ${address.countryName}, City: ${address.locality ?: address.subAdminArea}")
+            } else {
+                Log.d("RecipeDetailActivity", "Geocoder returned an empty list of addresses.")
+                countryTextView.text = "Country: N/A"
+                cityTextView.text = "City: N/A"
             }
-            .addOnFailureListener { e ->
-                // Hide progress bar
-                progressBar.visibility = View.GONE
-                Toast.makeText(this, "Error fetching recipe for deletion: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+        } ?: run {
+            Log.d("RecipeDetailActivity", "Geocoder returned null.")
+            countryTextView.text = "Country: N/A"
+            cityTextView.text = "City: N/A"
+        }
     }
 
+    override fun onMapReady(googleMap: GoogleMap) {
+        googleMap.uiSettings.isZoomControlsEnabled = true
+        googleMap.uiSettings.isMapToolbarEnabled = true
+        recipeLocation?.let {
+            googleMap.addMarker(MarkerOptions().position(it).title("Recipe Location"))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(it, 15f))
+            Log.d("RecipeDetailActivity", "Marker added to map at location: $it")
+        } ?: run {
+            Log.d("RecipeDetailActivity", "Recipe location is null, no marker added.")
+        }
+    }
 }

@@ -1,3 +1,4 @@
+// MainActivity.kt
 package com.example.KitchenIt.view
 
 import android.content.Intent
@@ -11,17 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.KitchenIt.R
 import com.example.KitchenIt.Recipe
-import com.example.KitchenIt.api.RecipeResponse
-import com.example.KitchenIt.api.RetrofitClient
 import com.example.KitchenIt.viewModel.RecipeAdapter
-
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,8 +25,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var recipeAdapter: RecipeAdapter
     private val recipes = mutableListOf<Recipe>()
     private lateinit var auth: FirebaseAuth
-    private val apiKey = "731232ba92804023a163fafbbfacd26c"
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,10 +45,10 @@ class MainActivity : AppCompatActivity() {
                 putExtra("imageUrl", recipe.imageUrl)
                 putExtra("products", recipe.products)
                 putExtra("userEmail", recipe.userEmail)
+                putExtra("latitude", recipe.latitude)
+                putExtra("longitude", recipe.longitude)
             }
             startActivity(intent)
-
-
         }
 
         recyclerView.adapter = recipeAdapter
@@ -65,35 +58,38 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
+                R.id.action_home -> {
+                    recipes.clear()
+                    fetchRecipes()
+                    true
+                }
+                R.id.action_my_recipes -> {
+                    if (getSharedPreferences("UserSession", MODE_PRIVATE).getString("name", null) != null) {
+                        recipes.clear()
+                        fetchMyRecipes()
+                        true
+                    } else {
+                        Toast.makeText(this, "No User Found! Please login first.", Toast.LENGTH_SHORT).show()
+                        false
+                    }
+                }
                 R.id.action_our_chef -> {
                     startActivity(Intent(this, RecipeListNewActivity::class.java))
                     true
                 }
-                R.id.action_my_recipes-> {
-                    if((getSharedPreferences("UserSession", MODE_PRIVATE).getString("name", null))!=null){
-                    recipes.clear()
-                    fetchMyRecipes()
-                    true
-                    }
-                    else {
-                        Toast.makeText(this,"No User Found!   Please login first.",Toast.LENGTH_SHORT).show()
-                        false}
-
-                }
-                R.id.action_home->{
-                    recipes.clear()
-                    fetchRecipes()
+                R.id.action_map -> {
+                    startActivity(Intent(this, RecipeMapActivity::class.java))
                     true
                 }
                 else -> false
             }
         }
     }
+
     override fun onResume() {
         super.onResume()
         fetchRecipes() // Refresh recipes when returning to MainActivity
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -123,7 +119,11 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_profile -> {
-
+                // Handle profile action
+                true
+            }
+            R.id.action_map -> {
+                startActivity(Intent(this, RecipeMapActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -136,17 +136,20 @@ class MainActivity : AppCompatActivity() {
         val logoutItem = menu?.findItem(R.id.action_logout)
         val addRecipeItem = menu?.findItem(R.id.action_add_recipe)
         val profileItem = menu?.findItem(R.id.action_profile)
+        val mapItem = menu?.findItem(R.id.action_map)
 
         if (currentUser == null) {
             loginRegisterItem?.isVisible = true
             addRecipeItem?.isVisible = false
             profileItem?.isVisible = false
             logoutItem?.isVisible = false
+            mapItem?.isVisible = false
         } else {
             loginRegisterItem?.isVisible = false
             addRecipeItem?.isVisible = true
             profileItem?.isVisible = true
             logoutItem?.isVisible = true
+            mapItem?.isVisible = true
         }
     }
 
@@ -162,8 +165,10 @@ class MainActivity : AppCompatActivity() {
                     val imageUrl = document.getString("imageUrl") ?: ""
                     val products = document.getString("products") ?: ""
                     val userEmail = document.getString("userEmail") ?: ""
+                    val latitude = document.getDouble("latitude") ?: 0.0
+                    val longitude = document.getDouble("longitude") ?: 0.0
 
-                    val recipe = Recipe(title, content, imageUrl, products, userEmail)
+                    val recipe = Recipe(title, content, imageUrl, products, userEmail, System.currentTimeMillis(), latitude, longitude)
                     recipes.add(recipe)
                 }
                 recipeAdapter.notifyDataSetChanged()
@@ -194,13 +199,16 @@ class MainActivity : AppCompatActivity() {
                     val content = document.getString("content") ?: ""
                     val imageUrl = document.getString("imageUrl") ?: ""
                     val products = document.getString("products") ?: ""
-                    val recipe = Recipe(title, content, imageUrl, products, userEmail)
+                    val latitude = document.getDouble("latitude") ?: 0.0
+                    val longitude = document.getDouble("longitude") ?: 0.0
+
+                    val recipe = Recipe(title, content, imageUrl, products, userEmail, System.currentTimeMillis(), latitude, longitude)
                     recipes.add(recipe)
                 }
                 recipeAdapter.notifyDataSetChanged()
-                if(recipes.size==0) {
+                if (recipes.size == 0) {
                     Toast.makeText(this, "No Such Recipes Yet!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this,MainActivity::class.java))
+                    startActivity(Intent(this, MainActivity::class.java))
                 }
             }
             .addOnFailureListener { exception ->
@@ -208,27 +216,4 @@ class MainActivity : AppCompatActivity() {
                 Log.e("MainActivity", "Error fetching recipes", exception)
             }
     }
-
-    private fun fetchRecipesFromApi() {
-        RetrofitClient.instance.getRandomRecipes(apiKey, 10).enqueue(object :
-            Callback<RecipeResponse> {
-            override fun onResponse(
-                call: Call<RecipeResponse>,
-                response: Response<RecipeResponse>
-            ) {
-                if (response.isSuccessful) {
-
-                } else {
-                   Toast.makeText(this@MainActivity,"error fetching from api",Toast.LENGTH_SHORT)
-                }
-            }
-
-            override fun onFailure(call: Call<RecipeResponse>, t: Throwable) {
-                Log.e("RecipeListNewActivity", "Error fetching recipes", t)
-                Toast.makeText(this@MainActivity, "Error fetching recipes", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-
 }

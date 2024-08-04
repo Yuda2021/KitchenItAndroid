@@ -1,4 +1,4 @@
-package com.example.KitchenIt.view
+package com.example.KitchenIt.viewModel
 
 import android.view.LayoutInflater
 import android.view.View

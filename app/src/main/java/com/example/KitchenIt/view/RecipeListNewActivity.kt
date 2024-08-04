@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.KitchenIt.R
 import com.example.KitchenIt.api.RecipeResponse
 import com.example.KitchenIt.api.RetrofitClient
+import com.example.KitchenIt.viewModel.RecipeListNewAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

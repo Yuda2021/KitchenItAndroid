@@ -1,5 +1,7 @@
 package com.example.KitchenIt.viewModel
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.KitchenIt.R
 import com.example.KitchenIt.Recipe
+import com.example.KitchenIt.view.RecipeDetailActivity
 
 class RecipeAdapter(
     private var recipes: List<Recipe>,
@@ -26,7 +29,17 @@ class RecipeAdapter(
                 .into(imageView)
 
             itemView.setOnClickListener {
-                onItemClick(recipe)
+                val context = itemView.context
+                val intent = Intent(context, RecipeDetailActivity::class.java).apply {
+                    putExtra("title", recipe.title)
+                    putExtra("content", recipe.content)
+                    putExtra("imageUrl", recipe.imageUrl)
+                    putExtra("products", recipe.products)
+                    putExtra("userEmail", recipe.userEmail)
+                    putExtra("latitude", recipe.latitude)
+                    putExtra("longitude", recipe.longitude)
+                }
+                context.startActivity(intent)
             }
         }
     }
@@ -42,7 +55,6 @@ class RecipeAdapter(
     }
 
     override fun getItemCount(): Int = recipes.size
-
 
     fun updateRecipes(newRecipes: List<Recipe>) {
         recipes = newRecipes
