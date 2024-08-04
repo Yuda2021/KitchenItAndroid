@@ -1,3 +1,4 @@
+// AddRecipeActivity.kt
 package com.example.KitchenIt.view
 
 import android.Manifest

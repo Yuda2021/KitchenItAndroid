@@ -40,7 +40,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".view.AddRecipeActivity" android:exported="false"/>
+        <activity
+            android:name=".view.AddRecipeActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
         <activity android:name=".view.RecipeDetailActivity" android:exported="false"/>
         <activity android:name=".view.RecipeApiDetailActivity" android:exported="false"/>
         <activity android:name=".view.RecipeListNewActivity" android:exported="false"/>
