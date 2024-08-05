@@ -4,4 +4,12 @@
         <item>User</item>
         <item>Admin</item>
     </string-array>
+    <string name="ingredients">Ingredients:\n</string>
+    <string name="nutrition">Nutrition:\n</string>
+    <string name="cooking_time">Cooking Time: </string>
+    <string name="servings">Servings: </string>
+    <string name="instructions">Instructions:\n</string>
+    <string name="dish_types">Dish Types:\n</string>
+    <string name="diets">Diets:\n</string>
+    <string name="cuisines">Cuisines:\n</string>
 </resources>

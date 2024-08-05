@@ -1,3 +1,4 @@
+// RecipeListNewAdapter.kt
 package com.example.KitchenIt.viewModel
 
 import android.view.LayoutInflater
@@ -18,12 +19,12 @@ class RecipeListNewAdapter(
 
     inner class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val titleTextView: TextView = itemView.findViewById(R.id.recipeTitle)
-        private val descriptionTextView: TextView = itemView.findViewById(R.id.recipeDescription)
+        private val summaryTextView: TextView = itemView.findViewById(R.id.recipeSummary)
         private val imageView: ImageView = itemView.findViewById(R.id.recipeImage)
 
         fun bind(recipe: Recipe) {
             titleTextView.text = recipe.title
-            descriptionTextView.text = HtmlCompat.fromHtml(recipe.summary, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            summaryTextView.text = HtmlCompat.fromHtml(recipe.summary, HtmlCompat.FROM_HTML_MODE_LEGACY)
             Glide.with(itemView.context).load(recipe.image).into(imageView)
 
             itemView.setOnClickListener { onItemClick(recipe) }
