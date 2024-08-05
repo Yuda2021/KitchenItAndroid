@@ -1,5 +1,7 @@
+// RecipeApiService.kt
 package com.example.KitchenIt.api
 
+import com.example.KitchenIt.model.RecipeApiModel
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -14,7 +16,8 @@ interface RecipeApiService {
 
     @GET("recipes/{id}/information")
     fun getRecipe(
-        @Path("id") id: String,
-        @Query("apiKey") apiKey: String
-    ): Call<RecipeDetailResponse>
+        @Path("id") id: Int,
+        @Query("apiKey") apiKey: String,
+        @Query("includeNutrition") includeNutrition: Boolean = true
+    ): Call<RecipeApiModel>
 }
