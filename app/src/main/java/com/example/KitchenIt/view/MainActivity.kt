@@ -129,6 +129,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     private fun updateMenuVisibility(menu: Menu? = null) {
         val currentUser = getSharedPreferences("UserSession", MODE_PRIVATE).getString("name", null)
         val loginRegisterItem = menu?.findItem(R.id.action_login_register)

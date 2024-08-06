@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -56,23 +57,31 @@ class ProfileActivity : AppCompatActivity() {
         val user = firebaseAuth.currentUser
         user?.let {
             val email = it.email
-            firestore.collection("users").document(email!!).get()
-                .addOnSuccessListener { document ->
-                    if (document != null) {
-                        val name = document.getString("name")
-                        val imageUrl = document.getString("imageUrl")
-                        editTextName.setText(name)
-                        if (imageUrl != null && imageUrl.isNotEmpty()) {
-                            Glide.with(this).load(imageUrl).into(profileImageView)
+            if (email != null) {
+                firestore.collection("users").document(email).get()
+                    .addOnSuccessListener { document ->
+                        if (document != null) {
+                            val name = document.getString("name")
+                            val imageUrl = document.getString("imageUri")
+                            Log.d("ProfileActivity", "Fetched user data: name = $name, imageUri = $imageUrl")
+                            editTextName.setText(name)
+                            if (imageUrl != null && imageUrl.isNotEmpty()) {
+                                Glide.with(this).load(imageUrl).into(profileImageView)
+                            } else {
+                                profileImageView.setImageResource(R.drawable.avatar)
+                            }
                         } else {
-                            profileImageView.setImageResource(R.drawable.avatar)
+                            Log.d("ProfileActivity", "No such document")
                         }
                     }
-                }
-                .addOnFailureListener { e ->
-                    Toast.makeText(this, "Failed to load profile: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-        }
+                    .addOnFailureListener { e ->
+                        Log.e("ProfileActivity", "Failed to load profile: ${e.message}", e)
+                        Toast.makeText(this, "Failed to load profile: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Log.d("ProfileActivity", "User email is null")
+            }
+        } ?: Log.d("ProfileActivity", "No user is logged in")
     }
 
     private fun openImagePicker() {
@@ -100,35 +109,42 @@ class ProfileActivity : AppCompatActivity() {
         val user = firebaseAuth.currentUser
         user?.let {
             val email = it.email
-            val userProfile = hashMapOf<String, Any>(
-                "name" to name,
-                "email" to email!!
-            )
+            if (email != null) {
+                val userProfile = hashMapOf<String, Any>(
+                    "name" to name,
+                    "email" to email
+                )
 
-            if (imageUri != null) {
-                val storageRef = firebaseStorage.reference.child("profile_images/${email}")
-                storageRef.putFile(imageUri!!)
-                    .addOnSuccessListener {
-                        storageRef.downloadUrl.addOnSuccessListener { uri ->
-                            userProfile["imageUrl"] = uri.toString()
-                            saveUserProfile(email, userProfile)
+                if (imageUri != null) {
+                    val storageRef = firebaseStorage.reference.child("profile_images/$email")
+                    storageRef.putFile(imageUri!!)
+                        .addOnSuccessListener {
+                            storageRef.downloadUrl.addOnSuccessListener { uri ->
+                                userProfile["imageUri"] = uri.toString()
+                                saveUserProfile(email, userProfile)
+                            }
                         }
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Failed to upload image: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+                        .addOnFailureListener { e ->
+                            Log.e("ProfileActivity", "Failed to upload image: ${e.message}", e)
+                            Toast.makeText(this, "Failed to upload image: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                } else {
+                    saveUserProfile(email, userProfile)
+                }
             } else {
-                saveUserProfile(email, userProfile)
+                Log.d("ProfileActivity", "User email is null")
             }
-        }
+        } ?: Log.d("ProfileActivity", "No user is logged in")
     }
 
     private fun saveUserProfile(email: String, userProfile: Map<String, Any>) {
         firestore.collection("users").document(email).set(userProfile)
             .addOnSuccessListener {
+                Log.d("ProfileActivity", "Profile updated successfully")
                 Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener { e ->
+                Log.e("ProfileActivity", "Failed to update profile: ${e.message}", e)
                 Toast.makeText(this, "Failed to update profile: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }

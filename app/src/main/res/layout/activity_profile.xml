@@ -1,37 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:context=".view.ProfileActivity">
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/profileImageView"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center"
-        android:contentDescription="@string/profile_image"
-        android:src="@drawable/avatar" />
+        android:src="@drawable/avatar"
+        android:contentDescription="@string/profile_image" />
 
     <Button
         android:id="@+id/buttonSelectImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Select Image"
         android:layout_gravity="center"
-        android:text="@string/select_image" />
+        android:layout_marginTop="16dp" />
 
     <EditText
         android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/enter_name" />
+        android:hint="Enter name"
+        android:layout_marginTop="16dp" />
 
     <Button
         android:id="@+id/buttonUpdateProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Update Profile"
         android:layout_gravity="center"
-        android:text="@string/update_profile" />
+        android:layout_marginTop="16dp" />
+
 </LinearLayout>
