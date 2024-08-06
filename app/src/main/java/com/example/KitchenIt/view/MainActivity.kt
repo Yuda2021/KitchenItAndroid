@@ -1,4 +1,3 @@
-// MainActivity.kt
 package com.example.KitchenIt.view
 
 import android.content.Intent
@@ -119,7 +118,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_profile -> {
-                // Handle profile action
+                startActivity(Intent(this, ProfileActivity::class.java))
                 true
             }
             R.id.action_map -> {

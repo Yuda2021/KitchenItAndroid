@@ -12,4 +12,8 @@
     <string name="dish_types">Dish Types:\n</string>
     <string name="diets">Diets:\n</string>
     <string name="cuisines">Cuisines:\n</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="select_image">Select Image</string>
+    <string name="enter_name">Enter name</string>
+    <string name="update_profile">Update Profile</string>
 </resources>
