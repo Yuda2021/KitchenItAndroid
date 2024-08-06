@@ -1,6 +1,7 @@
 // MainActivity.kt
 package com.example.KitchenIt.view
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.KitchenIt.R
 import com.example.KitchenIt.Recipe
+import com.example.KitchenIt.viewModel.EditUserActivity
+
 import com.example.KitchenIt.viewModel.RecipeAdapter
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
@@ -119,7 +122,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_profile -> {
-                // Handle profile action
+                startActivity(Intent(this, EditUserActivity::class.java))
                 true
             }
             R.id.action_map -> {
@@ -149,7 +152,7 @@ class MainActivity : AppCompatActivity() {
             addRecipeItem?.isVisible = true
             profileItem?.isVisible = true
             logoutItem?.isVisible = true
-            mapItem?.isVisible = true
+            mapItem?.isVisible = false
         }
     }
 

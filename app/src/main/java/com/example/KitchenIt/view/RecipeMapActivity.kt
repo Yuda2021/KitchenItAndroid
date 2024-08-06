@@ -66,10 +66,14 @@ class RecipeMapActivity : AppCompatActivity(), OnMapReadyCallback {
         db.collection("recipes").get().addOnSuccessListener { result ->
             recipes = result.mapNotNull { document ->
                 val title = document.getString("title") ?: ""
+                val content = document.getString("content") ?: ""
+                val imageUrl = document.getString("imageUrl") ?: ""
+                val products = document.getString("products") ?: ""
+                val userEmail = document.getString("userEmail") ?: ""
                 val latitude = document.getDouble("latitude") ?: 0.0
                 val longitude = document.getDouble("longitude") ?: 0.0
                 if (latitude != 0.0 && longitude != 0.0) {
-                    Recipe(title, "", "", "", "", 0L, latitude, longitude)
+                    Recipe(title, content, imageUrl, products, userEmail, 0L, latitude, longitude)
                 } else {
                     null
                 }
@@ -86,8 +90,10 @@ class RecipeMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (recipe != null) {
                     val intent = Intent(this, RecipeDetailActivity::class.java).apply {
                         putExtra("title", recipe.title)
-                        putExtra("latitude", recipe.latitude)
-                        putExtra("longitude", recipe.longitude)
+                        putExtra("content", recipe.content)
+                        putExtra("imageUrl", recipe.imageUrl)
+                        putExtra("products", recipe.products)
+                        putExtra("userEmail", recipe.userEmail)
                     }
                     startActivity(intent)
                 }
@@ -104,16 +110,19 @@ class RecipeMapActivity : AppCompatActivity(), OnMapReadyCallback {
         val dialogLayout = inflater.inflate(R.layout.dialog_recipe_list, null)
         val recyclerView = dialogLayout.findViewById<RecyclerView>(R.id.recyclerViewRecipes)
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        val dialog = builder.setView(dialogLayout)
+            .setTitle("Select a Recipe")
+            .setNegativeButton("Close", null)
+            .create()
+
         val adapter = RecipeListAdapter(recipes) { recipe ->
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(recipe.latitude, recipe.longitude), 15f))
-            builder.create().dismiss()
+            dialog.dismiss()
         }
         recyclerView.adapter = adapter
 
-        builder.setView(dialogLayout)
-        builder.setTitle("Select a Recipe")
-        builder.setNegativeButton("Close", null)
-        builder.show()
+        dialog.show()
     }
 
     class RecipeListAdapter(private val recipes: List<Recipe>, private val onItemClick: (Recipe) -> Unit) :
@@ -125,7 +134,6 @@ class RecipeMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
             fun bind(recipe: Recipe) {
                 titleTextView.text = recipe.title
-                // Assuming you have an image URL field in your Recipe class
                 Glide.with(itemView.context).load(recipe.imageUrl).into(imageView)
 
                 itemView.setOnClickListener {

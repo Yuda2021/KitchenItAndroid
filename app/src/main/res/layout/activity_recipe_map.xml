@@ -18,7 +18,8 @@
         android:text="Zoom In"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"/>
 
     <Button
         android:id="@+id/buttonZoomOut"
@@ -27,15 +28,16 @@
         android:text="Zoom Out"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
-        android:layout_toEndOf="@id/buttonZoomIn" />
+        android:layout_toEndOf="@id/buttonZoomIn"
+        android:visibility="invisible"/>
 
     <Button
         android:id="@+id/buttonShowRecipes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Show Recipes"
+        android:text="Recipes List"
         android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
-        android:layout_toEndOf="@id/buttonZoomOut" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="16dp" />
 
 </RelativeLayout>

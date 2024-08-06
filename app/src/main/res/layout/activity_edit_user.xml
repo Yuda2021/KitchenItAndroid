@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- activity_edit_user.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,74 +10,61 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Title Input -->
+        <!-- Email Input -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email:"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
         <EditText
-            android:id="@+id/editTextTitle"
+            android:id="@+id/editTextEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Title"
-            android:inputType="text" />
+            android:enabled="false"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:singleLine="false"
+            android:textAllCaps="false"
+            android:textStyle="bold|italic" />
 
-        <!-- Content Input -->
-        <EditText
-            android:id="@+id/editTextContent"
+        <!-- Profile Image View -->
+        <ImageView
+            android:id="@+id/imageViewProfile"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Content"
-            android:inputType="textMultiLine"
-            android:minLines="3"
-            android:gravity="top"
-            android:scrollbars="vertical" />
-
-        <!-- Products Input -->
-        <EditText
-            android:id="@+id/editTextProducts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Products"
-            android:inputType="textMultiLine"
-            android:minLines="3"
-            android:gravity="top"
-            android:scrollbars="vertical" />
-
-        <!-- Use Current Location Button -->
-        <Button
-            android:id="@+id/buttonUseCurrentLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Use Current Location" />
-
-        <!-- Country Input -->
-        <EditText
-            android:id="@+id/editTextCountry"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Country"
-            android:inputType="text" />
-
-        <!-- City Input -->
-        <EditText
-            android:id="@+id/editTextCity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="City"
-            android:inputType="text" />
+            android:layout_height="200dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="Profile Image"
+            android:scaleType="centerCrop" />
 
         <!-- Select Image Button -->
         <Button
             android:id="@+id/buttonSelectImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Image" />
-
-        <!-- Image View -->
-        <ImageView
-            android:id="@+id/imageView"
+            android:text="Change Image" />
+        <!-- Name Input -->
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="8dp"
-            android:contentDescription="Selected Image"
-            android:scaleType="centerCrop" />
+            android:layout_height="wrap_content"
+            android:text="Name:"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp"/>
+
+        <EditText
+            android:id="@+id/editTextName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Name"
+            android:inputType="text" />
+
+        <!-- Change Password Button -->
+        <Button
+            android:id="@+id/buttonChangePassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Change Password"
+            android:layout_marginTop="16dp" />
 
         <!-- Save and Cancel Buttons -->
         <LinearLayout
