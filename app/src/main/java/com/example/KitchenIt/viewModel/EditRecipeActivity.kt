@@ -34,7 +34,7 @@ class EditRecipeActivity : AppCompatActivity() {
 
     private var imageUri: Uri? = null
     private var originalTitle: String? = null
-    private var originalImageUrl: String? = null
+    //private var originalImageUrl: String? = null
     private var userEmail: String? = null
 
     private val IMAGE_PICK_CODE = 1000
@@ -47,18 +47,19 @@ class EditRecipeActivity : AppCompatActivity() {
         db = FirebaseFirestore.getInstance()
         storageRef = FirebaseStorage.getInstance().reference
 
+        imageView = findViewById(R.id.editRecipeImage)
+
         // Get the current recipe details from the intent
         originalTitle = intent.getStringExtra("title")
         val content = intent.getStringExtra("content")
         val products = intent.getStringExtra("products")
-        originalImageUrl = intent.getStringExtra("imageUrl")
         userEmail = intent.getStringExtra("userEmail")
+        val imageUrl = intent.getStringExtra("imageUrl") ?: ""
 
         // Initialize views
         editTitle = findViewById(R.id.editTitle)
         editContent = findViewById(R.id.editContent)
         editProducts = findViewById(R.id.editProducts)
-        imageView = findViewById(R.id.editRecipeImage)
         buttonUpdateRecipe = findViewById(R.id.buttonUpdateRecipe)
         buttonSelectImage = findViewById(R.id.buttonSelectImage)
         progressBar = findViewById(R.id.progressBar)
@@ -69,11 +70,8 @@ class EditRecipeActivity : AppCompatActivity() {
         editProducts.setText(products)
 
         // Load the current image
-        if (originalImageUrl != null) {
-            Glide.with(this)
-                .load(originalImageUrl)
-                .into(imageView)
-        }
+        Glide.with(this).load(imageUrl).into(imageView)
+
 
         // Set click listener for the select image button
         buttonSelectImage.setOnClickListener {
@@ -114,6 +112,7 @@ class EditRecipeActivity : AppCompatActivity() {
 
         // Show progress bar
         progressBar.visibility = View.VISIBLE
+        //showLoading()
 
         val updatedRecipe = hashMapOf(
             "title" to newTitle,
@@ -151,6 +150,7 @@ class EditRecipeActivity : AppCompatActivity() {
                     document.reference.update(updatedRecipe)
                         .addOnSuccessListener {
                             // Hide progress bar
+                            //hideLoading()
                             progressBar.visibility = View.GONE
 
                             Toast.makeText(this, "Recipe updated successfully", Toast.LENGTH_SHORT).show()
@@ -180,5 +180,15 @@ class EditRecipeActivity : AppCompatActivity() {
 
                 Toast.makeText(this, "Error fetching recipe for update: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+    fun showLoading() {
+        findViewById<View>(R.id.overlay).visibility = View.VISIBLE
+        findViewById<ProgressBar>(R.id.progressBar).visibility = View.VISIBLE
+    }
+
+    // Hide overlay and spinner
+    fun hideLoading() {
+        findViewById<View>(R.id.overlay).visibility = View.GONE
+        findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
     }
 }

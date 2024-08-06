@@ -62,6 +62,7 @@ class RecipeDetailActivity : AppCompatActivity() {
         }
         buttonEditRecipe.setOnClickListener {
             val intent = Intent(this, EditRecipeActivity::class.java).apply {
+                putExtra("imageUrl",imageUrl)
                 putExtra("title", title)
                 putExtra("content", content)
                 putExtra("products", products)
