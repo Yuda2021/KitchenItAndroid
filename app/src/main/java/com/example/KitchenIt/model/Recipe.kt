@@ -10,7 +10,8 @@ data class Recipe(
     val products: String,
     val userEmail: String = "default@user",
     val timestamp: Long = System.currentTimeMillis(),
-
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
@@ -19,7 +20,8 @@ data class Recipe(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readLong(),
-
+        parcel.readDouble(),
+        parcel.readDouble()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -29,7 +31,8 @@ data class Recipe(
         parcel.writeString(products)
         parcel.writeString(userEmail)
         parcel.writeLong(timestamp)
-
+        parcel.writeDouble(latitude)
+        parcel.writeDouble(longitude)
     }
 
     override fun describeContents(): Int {

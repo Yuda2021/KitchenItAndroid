@@ -5,17 +5,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.KitchenIt.R
 import com.example.KitchenIt.viewModel.EditRecipeActivity
+
 import com.google.firebase.firestore.FirebaseFirestore
 
 class RecipeDetailActivity : AppCompatActivity() {
@@ -38,6 +36,7 @@ class RecipeDetailActivity : AppCompatActivity() {
         productsTextView = findViewById(R.id.detailProducts)
         imageView = findViewById(R.id.detailImage)
         userEmailTextView = findViewById(R.id.detailUserEmail)
+        progressBar = findViewById(R.id.progressBar)
 
         val title = intent.getStringExtra("title") ?: ""
         val content = intent.getStringExtra("content") ?: ""
@@ -46,7 +45,6 @@ class RecipeDetailActivity : AppCompatActivity() {
         val userEmail = intent.getStringExtra("userEmail") ?: ""
         val buttonEditRecipe = findViewById<Button>(R.id.buttonEditRecipe)
         val buttonDeleteRecipe = findViewById<Button>(R.id.buttonDeleteRecipe)
-        progressBar = findViewById(R.id.progressBar)
 
 
         titleTextView.text = title
@@ -61,12 +59,12 @@ class RecipeDetailActivity : AppCompatActivity() {
             buttonDeleteRecipe.visibility = View.VISIBLE
         }
         buttonEditRecipe.setOnClickListener {
-            val intent = Intent(this, EditRecipeActivity::class.java).apply {
-                putExtra("imageUrl",imageUrl)
+                 val intent = Intent(this, EditRecipeActivity::class.java).apply {
                 putExtra("title", title)
                 putExtra("content", content)
                 putExtra("products", products)
                 putExtra("userEmail", userEmail)
+                putExtra("imageUrl",imageUrl)
             }
             startActivity(intent)
         }

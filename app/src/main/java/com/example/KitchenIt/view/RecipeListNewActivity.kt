@@ -1,3 +1,4 @@
+// RecipeListNewActivity.kt
 package com.example.KitchenIt.view
 
 import android.content.Intent
@@ -5,12 +6,12 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.KitchenIt.R
 import com.example.KitchenIt.api.RecipeResponse
 import com.example.KitchenIt.api.RetrofitClient
+import com.example.KitchenIt.viewModel.RecipeListNewAdapter
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -28,18 +29,14 @@ class RecipeListNewActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-
-
-        // Initialize the adapter with an empty list
         adapter = RecipeListNewAdapter(emptyList()) { recipe ->
-            val intent = Intent(this@RecipeListNewActivity, RecipeApiDetailActivity::class.java)
-            intent.putExtra("recipeId", recipe.id.toString())
+            val intent = Intent(this, RecipeApiDetailActivity::class.java)
+            intent.putExtra("recipeId", recipe.id)
             startActivity(intent)
         }
         recyclerView.adapter = adapter
 
         fetchRecipes()
-
     }
 
     private fun fetchRecipes() {
